@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const auth = require('./../../../auth');
+const error = require('./../../../utils/error');
 const TABLA = 'auth';
 
 /**
@@ -31,9 +32,9 @@ module.exports = function (injectedStore) {
 
             if(equals === true){
                 //generar token
-                return auth.sing(data);
+                return auth.sign(data);
             } else {
-                throw new Error("Informacion invalida.");
+                throw error("Informacion invalida",400);
             }
 
         })

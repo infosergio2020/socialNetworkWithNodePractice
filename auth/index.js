@@ -1,31 +1,51 @@
 const jwt = require('jsonwebtoken');
 const config = require('./../config');
+const error = require('../utils/error');
 //se establece el secret para las funciones de jwt
 const secret = config.jwt.secret;
 
-function sing(data){
-    let token = jwt.sign( data, secret);
+/**
+ * Firma los datos con un token JWT.
+ * @param {Object} data - Los datos a firmar dentro del token.
+ * @returns {string} El token JWT generado.
+ */
+function sign(data) {
+    let token = jwt.sign(data, secret);
     return token;
 }
 
-function verify(token){
-    console.log(`token a verificar: ${token}`);
-    
+/**
+ * Verifica un token JWT.
+ * @param {string} token - El token JWT a verificar.
+ * @returns {Object} Los datos decodificados si el token es válido.
+ * @throws {Error} Si el token no es válido o ha expirado.
+ */
+function verify(token) {
+    console.log(`Token a verificar: ${token}`);
     return jwt.verify(token, secret);
 }
 
+/**
+ * Objeto para realizar comprobaciones de propiedad.
+ * @type {Object}
+ */
 const check = {
-    own: function(req,owner){
+    /**
+     * Verifica si el usuario autenticado es el propietario de los datos.
+     * @param {Object} req - El objeto de solicitud HTTP.
+     * @param {string|number} owner - El ID del propietario a comparar.
+     * @throws {Error} Si el usuario autenticado no es el propietario.
+     */
+    own: function(req, owner) {
         const decoded = decodeHeader(req);
         console.log(decoded);
 
-        //comprobar si es o no propio
-        if(decoded.id !== owner){
-            throw new Error("No puedes hacer esto.");
+        // Comprobar si es o no propio
+        if (decoded.id !== owner) {
+            throw error("No puedes hacer esto.", 401);
         }
-
     }
-}
+};
 
 /**
  * Funcion encargada de procesar el token
@@ -34,10 +54,10 @@ const check = {
  */
 function getToken(auth){
     if(!auth){
-        throw new Error("No viene token");
+        throw error("No viene token",401);
     }
     if(auth.indexOf('Bearer ') === -1){
-        throw new Error("Formato invalido.");
+        throw error("Formato invalido.",400);
     }
     let token = auth.replace('Bearer ', '');
     return token;
@@ -59,6 +79,6 @@ function decodeHeader (req){
 }
 
 module.exports = {
-    sing,
+    sign,
     check,
 }
