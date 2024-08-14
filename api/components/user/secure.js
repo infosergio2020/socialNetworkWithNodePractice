@@ -7,6 +7,7 @@ module.exports= function checkAuth(action){
             // usuario que quiero modificar
             const owner = req.body.id;
             auth.check.own(req,owner);
+            next();
         } else {
             next();
         }

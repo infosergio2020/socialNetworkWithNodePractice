@@ -8,7 +8,9 @@ function sing(data){
     return token;
 }
 
-function verify(){
+function verify(token){
+    console.log(`token a verificar: ${token}`);
+    
     return jwt.verify(token, secret);
 }
 
@@ -16,6 +18,12 @@ const check = {
     own: function(req,owner){
         const decoded = decodeHeader(req);
         console.log(decoded);
+
+        //comprobar si es o no propio
+        if(decoded.id !== owner){
+            throw new Error("No puedes hacer esto.");
+        }
+
     }
 }
 
@@ -52,4 +60,5 @@ function decodeHeader (req){
 
 module.exports = {
     sing,
+    check,
 }

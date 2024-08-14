@@ -1,4 +1,5 @@
 const express = require('express');
+const secure = require('./secure');
 const response = require('./../../../network/response');
 const Controller = require('./index');
 const router = express.Router();
@@ -7,7 +8,7 @@ const router = express.Router();
 router.get('/', list);
 router.get('/:id', get);
 router.post('/', upsert);
-router.put('/', upsert);
+router.put('/', secure('update'),upsert);
 router.delete('/:id', remove);
 
 //Internal functions
