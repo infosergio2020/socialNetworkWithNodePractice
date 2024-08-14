@@ -4,6 +4,8 @@ async function getNanoid() {
     return nanoid;
 }
 
+const auth = require('./../auth');
+
 const TABLA = 'user';
 
 /**
@@ -44,21 +46,30 @@ module.exports = function (injectedStore) {
     /**
      * Inserta o actualiza un usuario en la tabla.
      * 
-     * @param {Object} data - Los datos del usuario a insertar o actualizar.
+     * @param {Object} body - Los datos del usuario a insertar o actualizar.
      * @returns {Promise<void>} - Retorna una promesa que se resuelve cuando la operación se completa.
      */
     async function upsert(body) {
 
         const nanoid = await getNanoid();
-
         const user = {
             name: body.name,
+            username: body.username,
         }
 
         if(body.id){
             user.id = body.id;
         } else {
             user.id = nanoid();
+        }
+
+        // antes de editar o crear el usuario hay que validar
+        if(body.password || body.username){
+            await auth.upsert({
+                id:user.id,
+                username:user.username,
+                password:body.password,
+            });
         }
 
         return store.upsert(TABLA, user);

@@ -11,7 +11,9 @@ const db = {
  * @returns {Promise<Array>} - Retorna una promesa que resuelve en un array con todos los elementos de la tabla.
  */
 async function list(tabla) {
-    return db[tabla];
+    //console.log(db);
+    
+    return db[tabla] || [];
 }
 
 /**
@@ -38,6 +40,11 @@ async function get(tabla, id) {
  * @returns {Promise<void>} - Retorna una promesa que se resuelve cuando la operación se completa.
  */
 async function upsert(tabla, data) {
+    
+    if(!db[tabla]){
+        db[tabla] = [];
+    }    
+
     let col = await list(tabla);
     const index = col.findIndex(item => item.id === data.id);
 
@@ -70,9 +77,26 @@ async function remove(tabla, id) {
     return null;
 }
 
+/**
+ * Funcion que realiza consultas a la base de datos, mediante filtracion utilizando los parametros de query enviados
+ * 
+ * @async
+ * @function
+ * @param {string} tabla - El nombre de la tabla donde se va a eliminar el elemento.
+ * @param {Object} q - Los datos del elemento a buscar.
+ * @returns {Promise<Object|null>} - Retorna una promesa que resuelve en el elemento encontrado o `null` si no se encuentra.
+ */
+async function query(tabla,q){
+    let col = await list(tabla);
+    let keys = Object.keys(q);
+    let key = keys[0];
+    return col.filter(item => item[key] === q[key])[0] || null;
+}
+
 module.exports = {
     list,
     get,
     upsert,
     remove,
+    query,
 };
