@@ -71,7 +71,7 @@ module.exports = function (injectedStore) {
                 password:body.password,
             });
         }
-
+                
         return store.upsert(TABLA, user);
     }
 
